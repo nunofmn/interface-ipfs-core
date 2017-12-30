@@ -493,7 +493,7 @@ module.exports = (common) => {
           })
         })
 
-        it('receive multiple messages', (done) => {
+        it.skip('receive multiple messages', (done) => {
           const inbox1 = []
           const inbox2 = []
           const outbox = ['hello', 'world', 'this', 'is', 'pubsub']
@@ -561,7 +561,7 @@ module.exports = (common) => {
           )
         })
 
-        it('send/receive 10k messages', (done) => {
+        it.skip('send/receive 10k messages', (done) => {
           this.timeout(2 * 60 * 1000)
 
           const msgBase = 'msg - '
