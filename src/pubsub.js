@@ -67,6 +67,7 @@ module.exports = (common) => {
     let ipfs1
     let ipfs2
     let ipfs3
+    let isGoIPFS
 
     before(function (done) {
       // CI takes longer to instantiate the daemon, so we need to increase the
@@ -90,6 +91,8 @@ module.exports = (common) => {
           ipfs1 = nodes[0]
           ipfs2 = nodes[1]
           ipfs3 = nodes[2]
+
+          isGoIPFS = ipfs1.id.agentVersion.startsWith('go-ipfs')
           done()
         })
       })
@@ -493,7 +496,10 @@ module.exports = (common) => {
           })
         })
 
-        it.skip('receive multiple messages', (done) => {
+        it('receive multiple messages', (done) => {
+          // TODO fix https://github.com/ipfs/interface-ipfs-core/pull/188#issuecomment-354673246
+          if (isGoIPFS) { return done() }
+
           const inbox1 = []
           const inbox2 = []
           const outbox = ['hello', 'world', 'this', 'is', 'pubsub']
@@ -561,7 +567,10 @@ module.exports = (common) => {
           )
         })
 
-        it.skip('send/receive 10k messages', (done) => {
+        it('send/receive 10k messages', (done) => {
+          // TODO fix https://github.com/ipfs/interface-ipfs-core/pull/188#issuecomment-354673246
+          if (isGoIPFS) { return done() }
+
           this.timeout(2 * 60 * 1000)
 
           const msgBase = 'msg - '
