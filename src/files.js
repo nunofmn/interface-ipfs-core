@@ -135,6 +135,26 @@ module.exports = (common) => {
         })
       })
 
+      it('a Buffer as tuple with wrap-with-directory', (done) => {
+        const tuple = { path: 'testfile.txt', content: smallFile.data }
+        const expectedWrapperHash = 'QmbzKtHxQXJnWG9VR66TscUfcoK3CV4nceRsCdyAEsEj9A'
+
+        ipfs.files.add([
+          tuple
+        ], { wrap: true }, (err, filesAdded) => {
+          expect(err).to.not.exist()
+
+          expect(filesAdded).to.have.length(2)
+          const [ file, wrapper ] = filesAdded
+          expect(file.hash).to.equal(smallFile.cid)
+          expect(file.path).to.equal('testfile.txt')
+          expect(wrapper.path).to.equal(expectedWrapperHash)
+          expect(wrapper.hash).to.equal(expectedWrapperHash)
+
+          done()
+        })
+      })
+
       it('add by path fails', (done) => {
         const validPath = path.join(process.cwd() + '/package.json')
 
@@ -161,6 +181,30 @@ module.exports = (common) => {
           expect(file.path).to.equal('data.txt')
           expect(file.size).to.equal(17)
           expect(file.hash).to.equal(expectedCid)
+          done()
+        })
+      })
+
+      it('a Readable Stream with wrap-with-directory option', (done) => {
+        const expectedCid = 'QmVv4Wz46JaZJeH5PMV4LGbRiiMKEmszPYY3g6fjGnVXBS'
+        const expectedWrapperHash = 'QmcCXFdG7duRkGrzzLNTeGUkDsq1RTPX9HTavYzuDjtLE2'
+
+        const rs = new Readable()
+        rs.push(Buffer.from('some data'))
+        rs.push(null)
+
+        const tuple = { path: 'data.txt', content: rs }
+
+        ipfs.files.add([tuple], { wrap: true }, (err, filesAdded) => {
+          expect(err).to.not.exist()
+
+          expect(filesAdded).to.be.length(2)
+          const [ file, wrapper ] = filesAdded
+          expect(file.path).to.equal('data.txt')
+          expect(file.size).to.equal(17)
+          expect(file.hash).to.equal(expectedCid)
+          expect(wrapper.path).to.equal(expectedWrapperHash)
+          expect(wrapper.hash).to.equal(expectedWrapperHash)
           done()
         })
       })
